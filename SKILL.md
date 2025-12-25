@@ -59,7 +59,7 @@ don't do it again until the user explicitly asks again.
 1. Start from trunk (`main` or `master`). It's also fine to start from an existing branch and stack work on top of it. Use `gt log` to see what the current state of the repo is. Assume that when initiating work, the user is in whatever base state they want. So if they are in a branch, assume the intent is to stack changes on top of it (when requesting that a branch or PR is created; when just changing code the user may still be just intending on amending the current one).
 2. Create stacked branches with `gt create -m "description"` (first line
    will become PR title, rest PR description)
-3. When making changes after already being in a branch with an existing commit, use `gt commit amend` to amend the commit to contain the latest changes (when the user indicates to update the PR).
+3. When making changes after already being in a branch with an existing commit, use `gt modify -u` to amend the commit to contain the latest changes (when the user indicates to update the PR).
 4. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after amending a commit.
 5. If conflicts occurr during `gt sync --all`, bail out and ask the user
 to fix it.
