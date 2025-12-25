@@ -9,8 +9,7 @@ Use Graphite (`gt`) instead of raw git commands for branch and PR management.
 
 ## Stacked PRs/branches
 
-Graphite supports the concept of stacked changes where one depends on another. The
-typical workflow is something like:
+Graphite supports the concept of stacked changes where one depends on another. The typical workflow is something like:
 
 - make changes to files
 - gt create -u -m 'fixed bar'
@@ -19,15 +18,13 @@ typical workflow is something like:
 - gt create -u -m 'fixed baz'
 - gt submit -p -m
 
-At that point there are two changes pending. Depending on timing and PR success,
-'fixed bar' and 'fixed baz' may both be open still. Graphite will arrange for them
-to be merged automatically and in order when ready (due to the use of -m). The -u
-causes gt create to create the branch with a commit containing updates to
-already-tracked files (-u is not mandatory though).
+At that point there are two changes pending. Depending on timing and PR success, 'fixed bar' and 'fixed baz' may both be
+open still. Graphite will arrange for them to be merged automatically and in order when ready (due to the use of -m).
+The -u causes gt create to create the branch with a commit containing updates to already-tracked files (-u is not
+mandatory though).
 
-When it seems reasonable, `gt sync --all` can be used to refresh the local repo
-with the latest remote changes driven by Graphite (including e.g. when Graphite
-rebased a PR relative to master after closing preceding diff).
+When it seems reasonable, `gt sync --all` can be used to refresh the local repo with the latest remote changes driven by
+Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff).
 
 ## Core Commands
 
@@ -40,45 +37,38 @@ rebased a PR relative to master after closing preceding diff).
 - `gt log short` - View the current stack
 - `gt bottom` / `gt top` - Navigate to bottom/top of stack
 - `gt up` / `gt down` - Navigate within stack
-- `gt modify -u` - Modify the current branch's contents to include updates to
-  already tracked files. Use this by default if you have not
-  created new files in the session.
-- `gt add <filename>` - Adds (starts tracking) files. Use this to start tracking
-  files you have created, so that a subsequent `gt modify -u` picks
-  it up. Always use this and never use `gt modify -a`, to avoid adding
-  untracked unignored files the user may have in their repo.
+- `gt modify -u` - Modify the current branch's contents to include updates to already tracked files. Use this by default
+  if you have not created new files in the session.
+- `gt add <filename>` - Adds (starts tracking) files. Use this to start tracking files you have created, so that a
+  subsequent `gt modify -u` picks it up. Always use this and never use `gt modify -a`, to avoid adding untracked
+  unignored files the user may have in their repo.
 
-If you need to do something with gt/git that isn't covered above, abort and tell
-the user why. They can choose what to do including improving this skill.
+If you need to do something with gt/git that isn't covered above, abort and tell the user why. They can choose what to
+do including improving this skill.
 
-If you are unsure what to do, err on the side of caution and tell the user about
-the confusion and ask for next steps (which also gives the user a chance to improve
-the skill). Do not proceed when unsure without confirmation.
+If you are unsure what to do, err on the side of caution and tell the user about the confusion and ask for next steps
+(which also gives the user a chance to improve the skill). Do not proceed when unsure without confirmation.
 
 ## Workflow
 
-First, wait until the user explicitly requests that we start a branch, or a PR etc.
-Until explicitly requested, assume we're just working on code in whatever branch
-we're in. Only when the user requests should we interact with gt (or git) inanything but a read-only fashion.
+First, wait until the user explicitly requests that we start a branch, or a PR etc. Until explicitly requested, assume
+we're just working on code in whatever branch we're in. Only when the user requests should we interact with gt (or git)
+inanything but a read-only fashion.
 
-If the user asks to update the PR, do so (amend commit, submit), but then don't do it
-again until the user explicitly asks again.
+If the user asks to update the PR, do so (amend commit, submit), but then don't do it again until the user explicitly
+asks again.
 
-1. Start from trunk (`main` or `master`). It's also fine to start from an existing branch
-   and stack work on top of it. Use `gt log` to see what the current state of the repo is.
-   Assume that when initiating work, the user is in whatever base state they want. So if
-   they are in a branch, assume the intent is to stack changes on top of it (when requesting
-   that a branch or PR is created; when just changing code the user may still be just
-   intending on amending the current one).
-2. Create stacked branches with `gt create -m "description"` (first line
-   will become PR title, rest PR description)
-3. When making changes after already being in a branch with an existing commit, use
-   `gt modify -u` to amend the commit to contain the latest changes (when the user
-   indicates to update the PR).
-4. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for
-   auto-merging PR). This includes after amending a commit.
-5. If conflicts occurr during `gt sync --all`, bail out and ask the user
-   to fix it.
+1. Start from trunk (`main` or `master`). It's also fine to start from an existing branch and stack work on top of it.
+   Use `gt log` to see what the current state of the repo is. Assume that when initiating work, the user is in whatever
+   base state they want. So if they are in a branch, assume the intent is to stack changes on top of it (when requesting
+   that a branch or PR is created; when just changing code the user may still be just intending on amending the current
+   one).
+2. Create stacked branches with `gt create -m "description"` (first line will become PR title, rest PR description)
+3. When making changes after already being in a branch with an existing commit, use `gt modify -u` to amend the commit
+   to contain the latest changes (when the user indicates to update the PR).
+4. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
+   amending a commit.
+5. If conflicts occurr during `gt sync --all`, bail out and ask the user to fix it.
 
 ## PR Creation
 
@@ -87,9 +77,8 @@ When submitting PRs with `gt submit`:
 - Use `-p` to publish PRs immediately.
 - Use `--no-edit` to skip editing PR descriptions
 - Graphite auto-generates PR titles from branch names
-- Graphite picks up the PR title and description from the commit. Make sure the commit
-  has the right first-line (title) and remaining body within the guidelines below, prior
-  to submitting.
+- Graphite picks up the PR title and description from the commit. Make sure the commit has the right first-line (title)
+  and remaining body within the guidelines below, prior to submitting.
 
 ### Commit Message Style
 
@@ -101,13 +90,11 @@ For the first line, be very terse and to the point. Examples:
 - "Fix bug: --foo command did not foo"
 - "Add ability to bar the baz."
 
-For the body, be more verbose and detailed when called for. For example if
-the change is non-obvious, explain _why_ the change was made. Do not add low value
-boiler plate like listing upgraded packages from a cargo update.
+For the body, be more verbose and detailed when called for. For example if the change is non-obvious, explain _why_ the
+change was made. Do not add low value boiler plate like listing upgraded packages from a cargo update.
 
 Err on the side of terseness. The human will edit as needed.
 
 ### PR Description Template
 
-The PR description should always be the same as the commit message
-except the first line (which is the PR title).
+The PR description should always be the same as the commit message except the first line (which is the PR title).
