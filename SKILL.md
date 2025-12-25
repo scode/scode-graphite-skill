@@ -1,6 +1,6 @@
 ---
 name: scode-graphite
-description: Use Graphite for creating PRs and general git workflow. Use when creating PRs, managing branches, syncing with trunk, or working with stacked changes.
+description: For any project that contains a .git/.graphite_repo_config file, this skill should be used for creating PRs, managing git branches and otherwise all non-read-only git operations.
 ---
 
 # Graphite Workflow
