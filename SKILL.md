@@ -51,12 +51,16 @@ If you are unsure what to do, err on the side of caution and tell the user about
 
 ## Workflow
 
-First, wait until the user explicitly requests that we start a branch, or a PR etc. Until explicitly requested, assume
-we're just working on code in whatever branch we're in. Only when the user requests should we interact with gt (or git)
-inanything but a read-only fashion.
+By default, never automatically create a PR or branch unless the user asks for it.
 
-If the user asks to update the PR, do so (amend commit, submit), but then don't do it again until the user explicitly
-asks again.
+When the user asks to 'create a PR' or 'make a PR', assume the intention is to create a separate change and PR rather
+than amending the existing commit. This applies regardless of whether the current branch is main or another branch.
+
+When the user asks to 'update the PR' or 'amend the PR', assume they are asking for whatever currently active branch to
+be amended (by amending the commit) and the PR updated using `gt submit`.
+
+After being asked to create or update the PR and doing so, stop doing so for further updates unless explicitly requested
+again.
 
 1. Start from trunk (`main` or `master`). It's also fine to start from an existing branch and stack work on top of it.
    Use `gt log` to see what the current state of the repo is. Assume that when initiating work, the user is in whatever
