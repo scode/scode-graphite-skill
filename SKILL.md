@@ -23,8 +23,8 @@ open still. Graphite will arrange for them to be merged automatically and in ord
 The -u causes gt create to create the branch with a commit containing updates to already-tracked files (-u is not
 mandatory though).
 
-When it seems reasonable, `gt sync --all` can be used to refresh the local repo with the latest remote changes driven by
-Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff).
+When it seems reasonable, `gt sync --all -f` can be used to refresh the local repo with the latest remote changes driven
+by Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff).
 
 ## Core Commands
 
@@ -32,7 +32,7 @@ Graphite (including e.g. when Graphite rebased a PR relative to master after clo
 - `gt create -m "message"` - Create a new branch stacked on current branch
 - `gt submit -p` - Push current stack and create/update PRs
   - use `gt submit -p -m` when asked to create an auto-merging PR
-- `gt sync --all` - Sync with trunk and restack branches
+- `gt sync --all -f` - Sync with trunk and restack branches
 - `gt checkout <branch>` - Switch to a branch
 - `gt log short` - View the current stack
 - `gt bottom` / `gt top` - Navigate to bottom/top of stack
@@ -68,7 +68,7 @@ asks again.
    to contain the latest changes (when the user indicates to update the PR).
 4. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
    amending a commit.
-5. If conflicts occurr during `gt sync --all`, bail out and ask the user to fix it.
+5. If conflicts occurr during `gt sync --all -f`, bail out and ask the user to fix it.
 
 ## PR Creation
 
