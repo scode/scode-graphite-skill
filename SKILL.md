@@ -70,9 +70,12 @@ again.
 2. Create stacked branches with `gt create -m "description"` (first line will become PR title, rest PR description)
 3. When making changes after already being in a branch with an existing commit, use `gt modify -u` to amend the commit
    to contain the latest changes (when the user indicates to update the PR).
-4. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
+4. Run `gt sync --all -f` to ensure we're up-to-date with remote.
+5. Run all tests/format checks/links etc (as requisted in CLAUDE.md/AGENTS.md). This should always be done before
+   creating a PR or updating an PR. Fix any issues.
+6. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
    amending a commit.
-5. If conflicts occurr during `gt sync --all -f`, bail out and ask the user to fix it.
+7. If conflicts occurr during `gt sync --all -f`, bail out and ask the user to fix it.
 
 ## PR Creation
 
