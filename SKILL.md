@@ -13,10 +13,10 @@ Graphite supports the concept of stacked changes where one depends on another. T
 
 - make changes to files
 - gt create -u -m 'fixed bar'
-- gt submit -p -m # auto-publish, and enable merge-when-ready
+- gt submit -p -m # auto-publish (-p)
 - make more changes
 - gt create -u -m 'fixed baz'
-- gt submit -p -m
+- gt submit -p
 
 At that point there are two changes pending. Depending on timing and PR success, 'fixed bar' and 'fixed baz' may both be
 open still. Graphite will arrange for them to be merged automatically and in order when ready (due to the use of -m).
@@ -76,6 +76,8 @@ again.
 6. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
    amending a commit.
 7. If conflicts occurr during `gt sync --all -f`, bail out and ask the user to fix it.
+
+NEVER pass the `-m` flag ('merge when ready') to `gt submit` unless the user explicitly requests an auto-merging PR.
 
 ## PR Creation
 
