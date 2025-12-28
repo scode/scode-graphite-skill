@@ -88,6 +88,8 @@ When submitting PRs with `gt submit`:
 - Graphite auto-generates PR titles from branch names
 - Graphite picks up the PR title and description from the commit. Make sure the commit has the right first-line (title)
   and remaining body within the guidelines below, prior to submitting.
+- When a PR has been updated or created, give the user both the link to the Graphite view of the PR as well as the
+  GitHub view of the PR.
 
 ### Commit Message Style
 
