@@ -23,8 +23,9 @@ open still. Graphite will arrange for them to be merged automatically and in ord
 The -u causes gt create to create the branch with a commit containing updates to already-tracked files (-u is not
 mandatory though).
 
-When it seems reasonable, `gt sync --all -f` can be used to refresh the local repo with the latest remote changes driven
-by Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff).
+At any time, `gt sync --all -f && git fetch --prune` can be used to refresh the local repo with the latest remote
+changes driven by Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff,
+or a PR has been closed and the branch deleted).
 
 ## Core Commands
 
@@ -32,7 +33,8 @@ by Graphite (including e.g. when Graphite rebased a PR relative to master after 
 - `gt create -m "message"` - Create a new branch stacked on current branch
 - `gt submit -p` - Push current stack and create/update PRs
   - use `gt submit -p -m` when asked to create an auto-merging PR
-- `gt sync --all -f` - Sync with trunk and restack branches
+- `gt sync --all -f && git fetch --prune` - Sync with trunk and restack branches (the git fetch with prune accounts for
+  merged PRs and deleted branches).
 - `gt checkout <branch>` - Switch to a branch
 - `gt log short` - View the current stack
 - `gt bottom` / `gt top` - Navigate to bottom/top of stack
@@ -70,7 +72,7 @@ again.
 2. Create stacked branches with `gt create -m "description"` (first line will become PR title, rest PR description)
 3. When making changes after already being in a branch with an existing commit, use `gt modify -u` to amend the commit
    to contain the latest changes (when the user indicates to update the PR).
-4. Run `gt sync --all -f` to ensure we're up-to-date with remote.
+4. Run `gt sync --all -f && git fetch --prune` to ensure we're up-to-date with remote.
 5. Run all tests/format checks/links etc (as requisted in CLAUDE.md/AGENTS.md). This should always be done before
    creating a PR or updating an PR. Fix any issues.
 6. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
