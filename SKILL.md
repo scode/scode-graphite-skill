@@ -93,6 +93,11 @@ When submitting PRs with `gt submit`:
 - When a PR has been updated or created, give the user both the link to the Graphite view of the PR as well as the
   GitHub view of the PR.
 
+## Creation of multiple PRs in a sequence
+
+When asked to create multiple PRs, assume the intent is to create a stack of PRs (because the changes may be dependent
+on each other). Do NOT switch back to main in between each change.
+
 ### Commit Message Style
 
 Assume the first line in the commit message is the title of the PR.
