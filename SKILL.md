@@ -7,6 +7,9 @@ description: For any project that contains a .git/.graphite_repo_config file, th
 
 Use Graphite (`gt`) instead of raw git commands for branch and PR management.
 
+Run all `gt` commands outside of the sandbox so long as they are read-only or the specific commands called for in this
+skill.
+
 ## Stacked PRs/branches
 
 Graphite supports the concept of stacked changes where one depends on another. The typical workflow is something like:
