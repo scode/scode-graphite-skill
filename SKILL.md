@@ -64,6 +64,9 @@ than amending the existing commit. This applies regardless of whether the curren
 When the user asks to 'update the PR' or 'amend the PR', assume they are asking for whatever currently active branch to
 be amended (by amending the commit) and the PR updated using `gt submit`.
 
+When asked to create a new PR, ALWAYS assume the user wants to keep working relative to the currently active branch/PR
+in a stacked branch. NEVER switch to the main branch.
+
 After being asked to create or update the PR and doing so, stop doing so for further updates unless explicitly requested
 again.
 
