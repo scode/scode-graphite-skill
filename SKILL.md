@@ -40,6 +40,7 @@ or a PR has been closed and the branch deleted).
   - Note: `-m` here enables "merge when ready" (different from `gt create -m`)
 - `gt sync --all -f && git fetch --prune` - Sync with trunk and restack branches (the git fetch with prune accounts for
   merged PRs and deleted branches).
+- `gt restack` - Restack the current branch on its parent (useful after parent changes)
 - `gt checkout <branch>` - Switch to a branch
 - `gt log short` - View the current stack
 - `gt bottom` / `gt top` - Navigate to bottom/top of stack
