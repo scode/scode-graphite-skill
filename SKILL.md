@@ -34,8 +34,10 @@ or a PR has been closed and the branch deleted).
 
 - `gt log` - See current stacks/branches and their status.
 - `gt create -m "message"` - Create a new branch stacked on current branch
+  - Note: `-m` here specifies the commit message (different from `gt submit -m`)
 - `gt submit -p` - Push current stack and create/update PRs
   - use `gt submit -p -m` when asked to create an auto-merging PR
+  - Note: `-m` here enables "merge when ready" (different from `gt create -m`)
 - `gt sync --all -f && git fetch --prune` - Sync with trunk and restack branches (the git fetch with prune accounts for
   merged PRs and deleted branches).
 - `gt checkout <branch>` - Switch to a branch
