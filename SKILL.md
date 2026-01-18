@@ -79,11 +79,11 @@ again.
 3. When making changes after already being in a branch with an existing commit, use `gt modify -u` to amend the commit
    to contain the latest changes (when the user indicates to update the PR).
 4. Run `gt sync --all -f && git fetch --prune` to ensure we're up-to-date with remote.
-5. Run all tests/format checks/links etc (as requisted in CLAUDE.md/AGENTS.md). This should always be done before
+5. Run all tests/format checks/links etc (as requested in CLAUDE.md/AGENTS.md). This should always be done before
    creating a PR or updating an PR. Fix any issues.
 6. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
    amending a commit.
-7. If conflicts occurr during `gt sync --all -f`, bail out and ask the user to fix it.
+7. If conflicts occur during `gt sync --all -f`, bail out and ask the user to fix it.
 
 NEVER pass the `-m` flag ('merge when ready') to `gt submit` unless the user explicitly requests an auto-merging PR.
 
@@ -110,7 +110,7 @@ Assume the first line in the commit message is the title of the PR.
 
 For the first line, be very terse and to the point. Examples:
 
-- "cargo update" (instead of some sentance talking about upgrading depencencies)
+- "cargo update" (instead of some sentence talking about upgrading dependencies)
 - "Fix bug: --foo command did not foo"
 - "Add ability to bar the baz."
 
