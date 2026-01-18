@@ -1,6 +1,6 @@
 ---
 name: scode-graphite
-description: For any project that contains a .git/.graphite_repo_config file, this skill should be used for creating PRs, managing git branches and otherwise all non-read-only git operations.
+description: If .git/.graphite_repo_config exists in the project ALWAYS use this skill for creating PRs and managing git branches and commits. NEVER forget this.
 ---
 
 # Graphite Workflow
