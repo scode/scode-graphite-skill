@@ -10,21 +10,28 @@ Use Graphite (`gt`) instead of raw git commands for branch and PR management.
 Run all `gt` commands outside of the sandbox so long as they are read-only or the specific commands called for in this
 skill.
 
+## Critical Rules
+
+1. **NEVER pass `-m` to `gt submit`** unless user explicitly requests auto-merge
+2. **NEVER switch to main** when creating stacked branches - always stack on current branch
+3. **NEVER create PRs automatically** - only when explicitly requested
+4. **STOP after one PR operation** - after creating/updating a PR, do not create more unless asked
+5. **`-m` means different things**: `gt create -m "msg"` = commit message, `gt submit -m` = auto-merge
+
 ## Stacked PRs/branches
 
 Graphite supports the concept of stacked changes where one depends on another. The typical workflow is something like:
 
 - make changes to files
 - gt create -u -m 'fixed bar'
-- gt submit -p -m # auto-publish (-p)
+- gt submit -p # publish without auto-merge
 - make more changes
 - gt create -u -m 'fixed baz'
 - gt submit -p
 
-At that point there are two changes pending. Depending on timing and PR success, 'fixed bar' and 'fixed baz' may both be
-open still. Graphite will arrange for them to be merged automatically and in order when ready (due to the use of -m).
-The -u causes gt create to create the branch with a commit containing updates to already-tracked files (-u is not
-mandatory though).
+At that point there are two changes pending as stacked PRs. 'fixed bar' and 'fixed baz' may both be open still. The -u
+causes gt create to create the branch with a commit containing updates to already-tracked files (-u is not mandatory
+though).
 
 At any time, `gt sync --all -f && git fetch --prune` can be used to refresh the local repo with the latest remote
 changes driven by Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff,
@@ -59,36 +66,25 @@ If you are unsure what to do, err on the side of caution and tell the user about
 
 ## Workflow
 
-By default, never automatically create a PR or branch unless the user asks for it.
+### Understanding User Intent
 
-When the user asks to 'create a PR' or 'make a PR', assume the intention is to create a separate change and PR rather
-than amending the existing commit. This applies regardless of whether the current branch is main or another branch.
+- "create a PR" / "make a PR" → Create a new branch and PR (do not amend existing commit)
+- "update the PR" / "amend the PR" → Amend the current branch's commit and update the existing PR
 
-When the user asks to 'update the PR' or 'amend the PR', assume they are asking for whatever currently active branch to
-be amended (by amending the commit) and the PR updated using `gt submit`.
+### Steps to Execute
 
-When asked to create a new PR, ALWAYS assume the user wants to keep working relative to the currently active branch/PR
-in a stacked branch. NEVER switch to the main branch.
+1. Use `gt log` to see the current repo state. Assume the user's current branch is their intended base.
+2. When creating a new PR, stack on the current branch. Never switch to main.
+3. Create branches with `gt create -m "description"` (first line becomes PR title).
+4. When updating an existing PR, use `gt modify -u` to amend the commit.
+5. Run `gt sync --all -f && git fetch --prune` to sync with remote.
+6. Run all tests/format checks/lints (as requested in CLAUDE.md/AGENTS.md) before creating or updating a PR. Fix any
+   issues.
+7. Submit with `gt submit -p`. Only add `-m` if user explicitly requested auto-merge.
+8. If conflicts occur during sync, stop and ask the user to resolve them.
 
-After being asked to create or update the PR and doing so, stop doing so for further updates unless explicitly requested
-again.
-
-1. Start from trunk (`main` or `master`). It's also fine to start from an existing branch and stack work on top of it.
-   Use `gt log` to see what the current state of the repo is. Assume that when initiating work, the user is in whatever
-   base state they want. So if they are in a branch, assume the intent is to stack changes on top of it (when requesting
-   that a branch or PR is created; when just changing code the user may still be just intending on amending the current
-   one).
-2. Create stacked branches with `gt create -m "description"` (first line will become PR title, rest PR description)
-3. When making changes after already being in a branch with an existing commit, use `gt modify -u` to amend the commit
-   to contain the latest changes (when the user indicates to update the PR).
-4. Run `gt sync --all -f && git fetch --prune` to ensure we're up-to-date with remote.
-5. Run all tests/format checks/links etc (as requested in CLAUDE.md/AGENTS.md). This should always be done before
-   creating a PR or updating an PR. Fix any issues.
-6. Submit the stack with `gt submit -p` (or `gt submit -p -m` if user asked for auto-merging PR). This includes after
-   amending a commit.
-7. If conflicts occur during `gt sync --all -f`, bail out and ask the user to fix it.
-
-NEVER pass the `-m` flag ('merge when ready') to `gt submit` unless the user explicitly requests an auto-merging PR.
+After creating or updating a PR, do not create additional PRs or branches for subsequent changes unless explicitly
+requested. Continue making code changes as needed.
 
 ## PR Creation
 
