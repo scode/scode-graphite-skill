@@ -18,8 +18,9 @@ Which should indicate that `gt init` has been run, therefore indicating the user
 Particularly "opinionated" behaviors that may be problematic (may not be a complete list) depending on whether your
 workflow matches mine:
 
-- It assumes all-in on Graphite and no lower level twiddling of refs or commits out of band using git. `--force` flag is
-  used on submit, remote branches are automatically pruned.
+- It assumes all-in on Graphite and no lower level twiddling of refs or commits out of band using git. `--force` and
+  `--no-edit` flags are used on submit, remote branches are automatically pruned.
 - The skill does have instructions to enable auto-merging on PRs when explicitly requested. Be aware given that it's
   possible for the agent to incorrectly do so even w/o the explicit request, potentially causing unintended and
   unreviewed code to be merged.
+- Draft PR support is available via `--draft` flag but must be explicitly requested.
