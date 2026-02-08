@@ -24,14 +24,22 @@ Graphite supports the concept of stacked changes where one depends on another. T
 
 - make changes to files
 - gt create -u -m 'fixed bar'
-- gt submit -p # publish without auto-merge
+- gt submit -p --force --no-edit # publish without auto-merge
 - make more changes
 - gt create -u -m 'fixed baz'
-- gt submit -p
+- gt submit -p --force --no-edit
+
+If a stacked change introduces new files, track them before creating the branch:
+
+- make changes including new files
+- gt add newfile.rs
+- gt create -u -m 'add new module'
+- gt submit -p --force --no-edit
 
 At that point there are two changes pending as stacked PRs. 'fixed bar' and 'fixed baz' may both be open still. The -u
 causes gt create to create the branch with a commit containing updates to already-tracked files (-u is not mandatory
-though).
+though). Note: `gt submit` submits the entire stack, which is safe — already-published PRs in the stack are simply
+updated.
 
 At any time, `gt sync --all -f && git fetch --prune` can be used to refresh the local repo with the latest remote
 changes driven by Graphite (including e.g. when Graphite rebased a PR relative to master after closing preceding diff,
@@ -42,8 +50,10 @@ or a PR has been closed and the branch deleted).
 - `gt log` - See current stacks/branches and their status.
 - `gt create -m "message"` - Create a new branch stacked on current branch
   - Note: `-m` here specifies the commit message (different from `gt submit -m`)
-- `gt submit -p` - Push current stack and create/update PRs
-  - use `gt submit -p -m` when asked to create an auto-merging PR
+- `gt submit -p --force --no-edit` - Push current stack and create/update PRs. Always use `--force` (branches are
+  frequently rebased by restack/sync) and `--no-edit` (prevents interactive editor from hanging the agent).
+  - use `gt submit -p --force --no-edit -m` when asked to create an auto-merging PR
+  - use `gt submit -p --force --no-edit --draft` when asked to create a draft/WIP PR
   - Note: `-m` here enables "merge when ready" (different from `gt create -m`)
 - `gt sync --all -f && git fetch --prune` - Sync with trunk and restack branches (the git fetch with prune accounts for
   merged PRs and deleted branches).
@@ -73,15 +83,16 @@ If you are unsure what to do, err on the side of caution and tell the user about
 
 ### Steps to Execute
 
-1. Use `gt log` to see the current repo state. Assume the user's current branch is their intended base.
-2. When creating a new PR, stack on the current branch. Never switch to main.
-3. Create branches with `gt create -m "description"` (first line becomes PR title).
-4. When updating an existing PR, use `gt modify -u` to amend the commit.
-5. Run `gt sync --all -f && git fetch --prune` to sync with remote.
+1. Run `gt sync --all -f && git fetch --prune` to sync with remote before starting work. If conflicts occur during sync,
+   stop and ask the user to resolve them.
+2. Use `gt log` to see the current repo state. Assume the user's current branch is their intended base.
+3. When creating a new PR, stack on the current branch. Never switch to main.
+4. Create branches with `gt create -m "description"` (first line becomes PR title). If new files were created, run
+   `gt add <file>` for each new file before `gt create`, or before `gt modify -u` if amending.
+5. When updating an existing PR, use `gt modify -u` to amend the commit.
 6. Run all tests/format checks/lints (as requested in CLAUDE.md/AGENTS.md) before creating or updating a PR. Fix any
    issues.
-7. Submit with `gt submit -p`. Only add `-m` if user explicitly requested auto-merge.
-8. If conflicts occur during sync, stop and ask the user to resolve them.
+7. Submit with `gt submit -p --force --no-edit`. Only add `-m` if user explicitly requested auto-merge.
 
 After creating or updating a PR, do not create additional PRs or branches for subsequent changes unless explicitly
 requested. Continue making code changes as needed.
@@ -90,9 +101,7 @@ requested. Continue making code changes as needed.
 
 When submitting PRs with `gt submit`:
 
-- Use `-p` to publish PRs immediately.
-- Use `--no-edit` to skip editing PR descriptions
-- Graphite auto-generates PR titles from branch names
+- Always use `gt submit -p --force --no-edit` as the base command.
 - Graphite picks up the PR title and description from the commit. Make sure the commit has the right first-line (title)
   and remaining body within the guidelines below, prior to submitting.
 - When a PR has been updated or created, give the user both the link to the Graphite view of the PR as well as the
@@ -121,3 +130,20 @@ Err on the side of terseness. The human will edit as needed.
 ### PR Description Template
 
 The PR description should always be the same as the commit message except the first line (which is the PR title).
+
+## Error Handling
+
+- **Conflicts during sync/restack**: Stop immediately and ask the user to resolve them. Do not attempt to resolve merge
+  conflicts automatically.
+- **Authentication or permission errors**: Tell the user — these require manual intervention (e.g., `gt auth`).
+- **"not on a Graphite stack" or similar state errors**: Run `gt log` to diagnose the current state, then tell the user
+  what happened. Do not try to fix Graphite internal state.
+- **Command not found**: If `gt` is not installed, tell the user to install it
+  (`npm install -g @withgraphite/graphite-cli`) and run `gt init` in the repo.
+- **Network failures on submit**: Retry the `gt submit` command once. If it fails again, tell the user.
+
+## Interactive Command Safety
+
+Some `gt` commands can open an interactive editor or prompt (e.g., `gt submit` without `--no-edit`, `gt rebase`). Always
+use `--no-edit` with `gt submit` to prevent the agent from hanging on an editor prompt. If a command hangs or produces
+no output for an extended period, it is likely waiting for interactive input — cancel it and tell the user.
