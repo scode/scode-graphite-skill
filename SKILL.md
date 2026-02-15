@@ -30,8 +30,15 @@ sandbox.
 
 ## After Submitting
 
-Provide both the Graphite and GitHub links to the PR, then stop. Do not create additional PRs or branches unless
-explicitly asked.
+After `gt submit` completes, your **final output** must be the PR links in this exact format (nothing else after them):
+
+```
+GitHub:   https://github.com/{owner}/{repo}/pull/{number}
+Graphite: https://app.graphite.com/github/pr/{owner}/{repo}/{number}
+```
+
+Extract the PR number from the `gt submit` output. Derive the owner and repo from the git remote origin URL. Always
+print both links as the very last thing you output. Do not create additional PRs or branches unless explicitly asked.
 
 ## Understanding User Intent
 
