@@ -12,37 +12,35 @@ escalation when required by environment policy.
 
 1. **NEVER pass `-m` to `gt submit`** unless user explicitly requests auto-merge. Note: `-m` means different things in
    different commands — `gt create -m "msg"` sets the commit message, `gt submit -m` enables auto-merge.
-2. **MANDATORY preflight**: run `gt sync --all -f && git fetch --prune` immediately before every `gt create` and every
-   `gt submit`.
-3. **ALWAYS provide an explicit branch name in `gt create`** (for example `<short-slug>`) to avoid later branch fixes.
-4. **NEVER switch to main** when creating stacked branches — always stack on current branch.
-5. **NEVER create PRs automatically** — only when explicitly requested.
-6. **NO exploratory commands by default**: do not run `gt ... --help`, extra diagnostics, or alternate command
+2. **NEVER run `gt sync --all -f` between a new local commit and the first `gt submit` attempt on that branch.**
+3. **Do not run proactive sync preflights** before `gt create` or `gt submit`.
+4. **ALWAYS provide an explicit branch name in `gt create`** (for example `<short-slug>`) to avoid later branch fixes.
+5. **NEVER switch to main** when creating stacked branches — always stack on current branch.
+6. **NEVER create PRs automatically** — only when explicitly requested.
+7. **NO exploratory commands by default**: do not run `gt ... --help`, extra diagnostics, or alternate command
    experiments unless a command fails with an unknown flag or unknown state.
-7. **STOP after one PR operation** — after creating/updating a PR, do not create more unless asked.
+8. **STOP after one PR operation** — after creating/updating a PR, do not create more unless asked.
 
 ## Create a New PR (Fast Path)
 
 1. `gt add <files>` — only if you created new files
-2. `gt sync --all -f && git fetch --prune`
-3. `gt create <short-slug> -u -m "commit message"` — creates a new branch stacked on the current branch
-4. `gt sync --all -f && git fetch --prune`
-5. `gt submit -p --force --no-edit` — publishes the PR
+2. `gt create <short-slug> -u -m "commit message"` — creates a new branch stacked on the current branch
+3. `gt submit -p --force --no-edit` — publishes the PR
 
 ## Update an Existing PR
 
 1. `gt add <files>` — only if you created new files
 2. `gt modify -u` — amends the current branch's commit with tracked file changes
-3. `gt sync --all -f && git fetch --prune`
-4. `gt submit -p --force --no-edit` — updates the PR
+3. `gt submit -p --force --no-edit` — updates the PR
 
 ## `gt submit` Retry Policy
 
-If `gt submit` fails with merged/closed ancestor warnings:
+If `gt submit` fails specifically because lower PRs in the stack were merged/closed (ancestor/stack-merged warning):
 
-1. Run `gt sync --all -f && git fetch --prune` once.
+1. Run `gt sync --all -f` once.
 2. Retry `gt submit -p --force --no-edit` once.
 3. If it fails again, stop and report the error. Do not loop or run workaround commands.
+4. For any other `gt submit` failure, do not run `gt sync`; stop and report the error.
 
 ## After Submitting
 
@@ -81,7 +79,8 @@ The PR description is the commit message body (everything after the first line).
 These are available when needed but are not mandatory steps:
 
 - `gt log` / `gt log short` — view current stacks/branches and their status
-- `gt sync --all -f` — sync with trunk and restack branches. If conflicts occur, stop and ask the user to resolve them.
+- `gt sync --all -f` — reconcile/restack branch state. Do not run this proactively before a first submit attempt after a
+  new commit; use it only after merged/closed ancestor submit failures or when explicitly requested.
 - `gt restack` — restack the current branch on its parent
 - `gt checkout <branch>` — switch to a branch
 - `gt bottom` / `gt top` / `gt up` / `gt down` — navigate within a stack
@@ -96,6 +95,7 @@ If you need to do something with gt/git that isn't covered above, stop and tell 
 ## Error Handling
 
 - **Merged/closed ancestor warnings on `gt submit`**: Follow the retry policy above (single sync + single retry).
+- **Any other `gt submit` failure**: Stop immediately, report the error, and do not run `gt sync`.
 - **Conflicts during sync/restack**: Stop and ask the user to resolve them.
 - **Authentication, permission, conflict, or hook errors**: Stop immediately, report the error, and ask the user. Do not
   run unrelated commands.
