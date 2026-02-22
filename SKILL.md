@@ -5,28 +5,44 @@ description: If .git/.graphite_repo_config exists in the project ALWAYS use this
 
 # Graphite Workflow
 
-Use Graphite (`gt`) instead of raw git commands for branch and PR management. Run all `gt` commands outside of the
-sandbox.
+Use Graphite (`gt`) instead of raw git commands for branch and PR management. Run `gt` commands directly; only request
+escalation when required by environment policy.
 
 ## Critical Rules
 
 1. **NEVER pass `-m` to `gt submit`** unless user explicitly requests auto-merge. Note: `-m` means different things in
    different commands — `gt create -m "msg"` sets the commit message, `gt submit -m` enables auto-merge.
-2. **NEVER switch to main** when creating stacked branches — always stack on current branch.
-3. **NEVER create PRs automatically** — only when explicitly requested.
-4. **STOP after one PR operation** — after creating/updating a PR, do not create more unless asked.
+2. **MANDATORY preflight**: run `gt sync --all -f && git fetch --prune` immediately before every `gt create` and every
+   `gt submit`.
+3. **ALWAYS provide an explicit branch name in `gt create`** (for example `<short-slug>`) to avoid later branch fixes.
+4. **NEVER switch to main** when creating stacked branches — always stack on current branch.
+5. **NEVER create PRs automatically** — only when explicitly requested.
+6. **NO exploratory commands by default**: do not run `gt ... --help`, extra diagnostics, or alternate command
+   experiments unless a command fails with an unknown flag or unknown state.
+7. **STOP after one PR operation** — after creating/updating a PR, do not create more unless asked.
 
-## Create a New PR
+## Create a New PR (Fast Path)
 
 1. `gt add <files>` — only if you created new files
-2. `gt create -u -m "commit message"` — creates a new branch stacked on the current branch
-3. `gt submit -p --force --no-edit` — publishes the PR
+2. `gt sync --all -f && git fetch --prune`
+3. `gt create <short-slug> -u -m "commit message"` — creates a new branch stacked on the current branch
+4. `gt sync --all -f && git fetch --prune`
+5. `gt submit -p --force --no-edit` — publishes the PR
 
 ## Update an Existing PR
 
 1. `gt add <files>` — only if you created new files
 2. `gt modify -u` — amends the current branch's commit with tracked file changes
-3. `gt submit -p --force --no-edit` — updates the PR
+3. `gt sync --all -f && git fetch --prune`
+4. `gt submit -p --force --no-edit` — updates the PR
+
+## `gt submit` Retry Policy
+
+If `gt submit` fails with merged/closed ancestor warnings:
+
+1. Run `gt sync --all -f && git fetch --prune` once.
+2. Retry `gt submit -p --force --no-edit` once.
+3. If it fails again, stop and report the error. Do not loop or run workaround commands.
 
 ## After Submitting
 
@@ -65,14 +81,13 @@ The PR description is the commit message body (everything after the first line).
 These are available when needed but are not mandatory steps:
 
 - `gt log` / `gt log short` — view current stacks/branches and their status
-- `gt sync --all -f && git fetch --prune` — sync with trunk and restack branches. If conflicts occur, stop and ask the
-  user to resolve them.
+- `gt sync --all -f` — sync with trunk and restack branches. If conflicts occur, stop and ask the user to resolve them.
 - `gt restack` — restack the current branch on its parent
 - `gt checkout <branch>` — switch to a branch
 - `gt bottom` / `gt top` / `gt up` / `gt down` — navigate within a stack
 - `gt add <filename>` — start tracking a file (prefer this over `gt modify -a` to avoid adding untracked files)
 - `gt modify -u` — amend the current branch's commit with updates to tracked files
-- `gt create -m "message"` — create a new branch stacked on current branch
+- `gt create <short-slug> -m "message"` — create a new branch stacked on current branch
 - `gt submit -p --force --no-edit` — push and create/update PRs (add `-m` only if user requests auto-merge, `--draft`
   for draft PRs)
 
@@ -80,7 +95,9 @@ If you need to do something with gt/git that isn't covered above, stop and tell 
 
 ## Error Handling
 
+- **Merged/closed ancestor warnings on `gt submit`**: Follow the retry policy above (single sync + single retry).
 - **Conflicts during sync/restack**: Stop and ask the user to resolve them.
-- **Authentication or permission errors**: Tell the user — these require manual intervention (e.g., `gt auth`).
-- **State errors** (e.g., "not on a Graphite stack"): Run `gt log` to diagnose, then tell the user.
+- **Authentication, permission, conflict, or hook errors**: Stop immediately, report the error, and ask the user. Do not
+  run unrelated commands.
+- **State errors** (e.g., "not on a Graphite stack"): Run `gt log` once to diagnose, then stop and tell the user.
 - **Command hangs**: Likely waiting for interactive input — cancel it and tell the user.
