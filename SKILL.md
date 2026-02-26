@@ -8,6 +8,13 @@ description: If .git/.graphite_repo_config exists in the project ALWAYS use this
 Use Graphite (`gt`) instead of raw git commands for branch and PR management. Run `gt` commands directly; only request
 escalation when required by environment policy.
 
+## Sandbox
+
+**ALL `gt` commands MUST be run with `dangerouslyDisableSandbox: true`.** The `gt` CLI writes to `.git/` (refs, objects,
+config, hooks, HEAD) and makes network requests to GitHub and Graphite APIs — the sandbox blocks both. Set
+`dangerouslyDisableSandbox: true` on every Bash tool call that runs a `gt` command. This applies to agents and subagents
+equally.
+
 ## Critical Rules
 
 1. **NEVER pass `-m` to `gt submit`** unless user explicitly requests auto-merge. Note: `-m` means different things in
