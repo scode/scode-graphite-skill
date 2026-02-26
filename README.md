@@ -24,3 +24,5 @@ workflow matches mine:
   possible for the agent to incorrectly do so even w/o the explicit request, potentially causing unintended and
   unreviewed code to be merged.
 - Draft PR support is available via `--draft` flag but must be explicitly requested.
+- All `gt` commands require `dangerouslyDisableSandbox: true` on the Bash tool call because `gt` needs write access to
+  `.git/` and network access to GitHub/Graphite APIs, both of which the sandbox blocks.
