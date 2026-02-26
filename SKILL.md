@@ -23,10 +23,12 @@ equally.
 3. **Do not run proactive sync preflights** before `gt create` or `gt submit`.
 4. **ALWAYS provide an explicit branch name in `gt create`** (for example `<short-slug>`) to avoid later branch fixes.
 5. **NEVER switch to main** when creating stacked branches — always stack on current branch.
-6. **NEVER create PRs automatically** — only when explicitly requested.
+6. **NEVER create or update PRs unless the user explicitly asks in that message.** A prior request to create or update a
+   PR does NOT authorize future creates or updates. Each `gt create`, `gt modify`, and `gt submit` requires a fresh
+   explicit request. If the user says "update the PR" and you do, then the user asks for more code changes, make only
+   the code changes — do NOT update the PR again until explicitly asked again.
 7. **NO exploratory commands by default**: do not run `gt ... --help`, extra diagnostics, or alternate command
    experiments unless a command fails with an unknown flag or unknown state.
-8. **STOP after one PR operation** — after creating/updating a PR, do not create more unless asked.
 
 ## Create a New PR (Fast Path)
 
@@ -63,8 +65,9 @@ print both links as the very last thing you output. Do not create additional PRs
 
 ## Understanding User Intent
 
-- "create a PR" / "make a PR" → use the **Create** workflow above (new branch + PR)
-- "update the PR" / "amend the PR" → use the **Update** workflow above (amend existing commit)
+- "create a PR" / "make a PR" → **always** use the **Create** workflow (new branch + PR), even if the current branch
+  already has a PR. "Make/create" always means a new PR stacked on the current branch, never an update.
+- "update the PR" / "amend the PR" → use the **Update** workflow above (amend existing commit on the current branch)
 - Multiple PRs in sequence → create a stack (do NOT switch back to main between each)
 
 If you are unsure what to do, stop and ask the user rather than proceeding.
